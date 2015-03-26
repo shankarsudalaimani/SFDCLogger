@@ -89,6 +89,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ObservableQueue.cs" />
+    <Compile Include="TimerLogic.cs" />
     <Compile Include="SFConnection.cs" />
     <Compile Include="Web References\tooling32\Reference.cs">
       <AutoGen>True</AutoGen>
