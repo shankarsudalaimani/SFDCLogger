@@ -23,32 +23,54 @@ namespace SfLogger
     public partial class MainWindow : Window
     {
 
-        public ObservableCollection<string> Logs { get; set; }
+        public ObservableLimitedQueue<string> Logs { get; set; }
         public bool onTop { get; set; }
+        
         private SFConnection sfConnection;
-        
-        
+        public System.Windows.Threading.DispatcherTimer refreshTimer = new System.Windows.Threading.DispatcherTimer();
         public MainWindow(SFConnection connection)
         {
             InitializeComponent();
             this.DataContext = this;
-            Logs = new ObservableCollection<string>();
+            Logs = new ObservableLimitedQueue<string>(int.Parse(logLimit.Text));
             sfConnection = connection;
             sfConnection.Connected += delegate {
                 ResetLoading();
             };
             sfConnection.Initialize();
+            refreshTimer.Tick += new EventHandler(timer_Tick);
+            
         }
 
+        public void AddLogs(IEnumerable<string> logs)
+        {
+            foreach (var log in logs)
+            {
+                Logs.Enqueue(log);
+           
+            }
+        }
 
-        private async void fetchBtn_Click(object sender, RoutedEventArgs e)
+        private async void FetchLogs()
+        {
+            Logs.limit = int.Parse(logLimit.Text);
+            var logs = await sfConnection.QueryLogs();
+            if (logs == null)
+                return;
+
+            AddLogs(logs);
+        }
+
+        private void startBtn_Click(object sender, RoutedEventArgs e)
         {
             Loading();
-            Logs.Clear();
-            foreach (var log in await sfConnection.QueryLogs())
-            {
-                Logs.Add(log);
-            }
+            FetchLogs();
+
+        }
+
+        private void timer_Tick(object sender, EventArgs e)
+        {
+            FetchLogs();
         }
 
         private void registerBtn_Click(object sender, RoutedEventArgs e)
@@ -60,14 +82,14 @@ namespace SfLogger
         private void Loading()
         {
             ellipse.Visibility = System.Windows.Visibility.Visible;
-            fetchBtn.IsEnabled = false;
+            startBtn.IsEnabled = false;
             registerBtn.IsEnabled = false;
         }
 
         private void ResetLoading()
         {
             ellipse.Visibility = System.Windows.Visibility.Hidden;
-            fetchBtn.IsEnabled = true;
+            startBtn.IsEnabled = true;
             registerBtn.IsEnabled = true;
         }
 
@@ -76,6 +98,13 @@ namespace SfLogger
             Window window = (Window)this;
             window.Topmost = onTop;
         }
+
+        private void TimerBtn_Click(object sender, RoutedEventArgs e)
+        {
+            TimerLogic.SetTimer();
+        }
+
+
 
 
 
