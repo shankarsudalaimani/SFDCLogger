@@ -33,7 +33,7 @@ namespace SfLogger
         private AuthenticationClient auth;
         private tooling32.SforceServiceService sforce = new SforceServiceService();
         private ServiceHttpClient serviceClient;
-        private List<ApexLog> logsData = new List<ApexLog>();
+        private DateTime newestLogTime;
 
         //ctor
         public SFConnection(string login, string password, string url, string key, string secret, string api, bool sandbox)
@@ -52,6 +52,7 @@ namespace SfLogger
         {
             LoginSoap();
             await LoginRest();
+            newestLogTime = GetNewestLogDate();
         }
 
         private void LoginSoap()
@@ -134,29 +135,48 @@ namespace SfLogger
         }
 
 
-        private void GetLogsIds()
+        private IEnumerable<ApexLog> GetLogsIds()
         {
-            var res = sforce.query("select id, operation from apexLog order by starttime desc limit 20");
-            logsData = res.records.Cast<ApexLog>().ToList();
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+ 
+            var res = sforce.query("select id, operation, starttime " +
+                "from apexLog where startTime > " + newestLogTime.ToString("s") + "Z" +
+                " order by starttime desc limit 20");
+            if (res.size == 0)
+                return null;
+
+            return res.records.Cast<ApexLog>();
         }
 
-
+        private DateTime GetNewestLogDate()
+        {
+            var res = sforce.query("select starttime from apexLog order by starttime desc limit 1");
+            return res.records.Cast<ApexLog>().First().StartTime.Value;
+        }
 
 
 
         public async Task<IEnumerable<string>> QueryLogs()
         {
-            GetLogsIds();
+            var logsData = GetLogsIds();
+            if (logsData == null)
+            {
+                Connected();
+                return null;
+            }
+
             StringBuilder logs = new StringBuilder();
+
             foreach (var logData in logsData)
             {
-                logs.AppendLine("*** " + logData.Operation + " ***");
+           //   logs.AppendLine("*** " + logData.Operation + " ***");
                 logs.Append(await httpClient.GetStringAsync(
                     OrgUrl + "/services/data/v29.0/sobjects/ApexLog/" + logData.Id + "/Body/"));
             }
 
             var logsLines = logs.ToString().Split(new[] { '\r', '\n' });
 
+            newestLogTime = logsData.Last().StartTime.Value;
             Connected();
             return logsLines.Where(x => x.Contains("|USER_DEBUG|") || x.Contains("***"));
 
