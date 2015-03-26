@@ -12,6 +12,8 @@ using Salesforce.Common.Models;
 using Salesforce.Common.Serializer;
 using Salesforce.Common;
 using  System.Net.Http;
+using System.Threading;
+using System.Globalization;
 
 namespace SfLogger
 {
