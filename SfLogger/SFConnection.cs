@@ -142,7 +142,7 @@ namespace SfLogger
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
  
             var res = sforce.query("select id, operation, starttime " +
-                "from apexLog where startTime > " + newestLogTime.ToString("s") + "Z" +
+                "from apexLog where (not operation like '%.apexp') and startTime > " + newestLogTime.ToString("s") + "Z" +
                 " order by starttime desc limit 20");
             if (res.size == 0)
                 return null;

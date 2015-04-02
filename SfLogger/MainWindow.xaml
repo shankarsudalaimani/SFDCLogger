@@ -1,4 +1,5 @@
 ﻿<Window x:Class="SfLogger.MainWindow"
+        x:Name="mainw"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Logger" Height="350" Width="525" FontSize="10" Background="#FF232323" Foreground="#FFA2A2A2">
@@ -135,13 +136,7 @@
                 Click="startBtn_Click" Background="#FF292929" Foreground="#FF8F8F8F">Start polling</Button>
                 <Button Grid.Row="0" Name="registerBtn" IsEnabled="false" HorizontalAlignment="Left" Margin="10,0,10,0" VerticalAlignment="Center"
                 Click="registerBtn_Click" Background="#FF292929" Foreground="#FF8F8F8F">Refresh log limit (20)</Button>
-                <Button Grid.Row="0"   IsEnabled="true" HorizontalAlignment="Left" Margin="5,0,3,0" VerticalAlignment="Center"
-                Click="TimerBtn_Click" x:Name="TimerBtn" x:FieldModifier="public"  Background="#FF292929" Foreground="#FF8F8F8F">Start Timer</Button>
-                <TextBox Name="refTime" Text="15" IsEnabled="True" HorizontalAlignment="Left" Margin="1,0,10,0" VerticalAlignment="Center" Height="18" Width="20" />
-                <Label Grid.Row="0"   IsEnabled="true" HorizontalAlignment="Left" Margin="3,0,3,0" VerticalAlignment="Center"
-                Foreground="#FF8F8F8F">Limit logging:</Label>
-                <TextBox Name="logLimit" Text="50" IsEnabled="True" HorizontalAlignment="Left" Margin="1,0,10,0" VerticalAlignment="Center" Height="18" Width="20" />
-                <CheckBox IsChecked="{Binding onTop, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Checked="onTopBox_Checked" Unchecked="onTopBox_Checked"  Name="onTopBox"  VerticalAlignment="Center" Margin="8,0,0,0" Foreground="Gray">Allways on top</CheckBox>
+            <CheckBox IsChecked="{Binding onTop, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Checked="onTopBox_Checked" Unchecked="onTopBox_Checked"  Name="onTopBox"  VerticalAlignment="Center" Margin="8,0,0,0" Foreground="Gray">Allways on top</CheckBox>
         </StackPanel>
         
 
@@ -179,7 +174,7 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <StackPanel x:Name="stackLine">
-                            <TextBlock  Text="{Binding}" TextWrapping="Wrap" />
+                            <TextBlock  Text="{Binding}" TextWrapping="Wrap" x:Name="textLine" />
                         </StackPanel>
                         <DataTemplate.Triggers>
                             <Trigger Property="ItemsControl.AlternationIndex" Value="0">
@@ -188,7 +183,8 @@
                             <Trigger Property="ItemsControl.AlternationIndex" Value="1">
                                 <Setter Property="Background" Value="#FF191919" TargetName="stackLine" />
                             </Trigger>
-                       
+
+
                         </DataTemplate.Triggers>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>

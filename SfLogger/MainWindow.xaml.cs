@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
+using System.Windows.Threading;
 
 namespace SfLogger
 {
@@ -27,18 +28,20 @@ namespace SfLogger
         public bool onTop { get; set; }
         
         private SFConnection sfConnection;
-        public System.Windows.Threading.DispatcherTimer refreshTimer = new System.Windows.Threading.DispatcherTimer();
+        private DispatcherTimer timer = new DispatcherTimer();
+        private int startCounter;
+
         public MainWindow(SFConnection connection)
         {
             InitializeComponent();
             this.DataContext = this;
-            Logs = new ObservableLimitedQueue<string>(int.Parse(logLimit.Text));
+            
+            Logs = new ObservableLimitedQueue<string>(50);
             sfConnection = connection;
-            sfConnection.Connected += delegate {
-                ResetLoading();
-            };
+            sfConnection.Connected += ResetLoading;
             sfConnection.Initialize();
-            refreshTimer.Tick += new EventHandler(timer_Tick);
+            timer.Interval = new TimeSpan(0, 0, 10);
+            timer.Tick += new EventHandler(timer_Tick);
             
         }
 
@@ -47,13 +50,11 @@ namespace SfLogger
             foreach (var log in logs)
             {
                 Logs.Enqueue(log);
-           
             }
         }
 
         private async void FetchLogs()
         {
-            Logs.limit = int.Parse(logLimit.Text);
             var logs = await sfConnection.QueryLogs();
             if (logs == null)
                 return;
@@ -63,8 +64,16 @@ namespace SfLogger
 
         private void startBtn_Click(object sender, RoutedEventArgs e)
         {
-            Loading();
-            FetchLogs();
+            if (startCounter++ % 2 == 0)
+            {
+                Loading();
+                timer.Start();
+            }
+            else
+            {
+                timer.Stop();
+            }
+            
 
         }
 
@@ -99,10 +108,7 @@ namespace SfLogger
             window.Topmost = onTop;
         }
 
-        private void TimerBtn_Click(object sender, RoutedEventArgs e)
-        {
-            TimerLogic.SetTimer();
-        }
+ 
 
 
 
