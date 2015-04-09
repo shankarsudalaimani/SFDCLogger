@@ -68,10 +68,13 @@ namespace SfLogger
             {
                 Loading();
                 timer.Start();
+                startBtn.Content = "Stop polling";
             }
             else
             {
                 timer.Stop();
+                startBtn.Content = "Start polling";
+
             }
             
 

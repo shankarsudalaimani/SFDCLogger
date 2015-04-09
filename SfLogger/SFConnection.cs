@@ -117,6 +117,7 @@ namespace SfLogger
             TraceFlag[] traceFlags = { traceFlag };
 
             SaveResult[] traceResults = sforce.create(traceFlags);
+            
             for (int i = 0; i < traceResults.Length; i++)
             {
 
@@ -130,6 +131,16 @@ namespace SfLogger
                     Debug.WriteLine("Error: could not create trace flag ");
                     Debug.WriteLine(" The error reported was: " +
                     traceResults[i].errors[0].message + "\n");
+
+                    // delete username and call self again
+                    if (traceResults[i].errors[0].message == "This entity is already being traced.: Traced Entity ID")
+                    {
+                        var existingTrace = sforce.query("select id from traceflag where TracedEntityId = '" 
+                            + currentUserId + "' limit 1");
+                        sforce.delete(new[] { existingTrace.records[0].Id });
+                        RegisterUser();
+                    }
+                    
                 }
             }
 
