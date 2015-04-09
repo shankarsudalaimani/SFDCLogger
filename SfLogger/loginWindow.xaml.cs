@@ -51,6 +51,16 @@ namespace SfLogger
 
         private void cacheCredentials()
         {
+            File.WriteAllBytes("cache.dat", 
+                EncryptionHelper.Encrypt(
+                    loginBox.Text + '\n' +
+                    passwordBox.Password + '\n' +
+                    urlBox.Text + '\n' +
+                    keyBox.Text + '\n' +
+                    secretBox.Text + '\n' +
+                    apiBox.Text + '\n' +
+                    sandboxBox.IsChecked.ToString()));
+            /*
             File.WriteAllLines("cache.dat", 
                 new[] { loginBox.Text,
                     passwordBox.Password,
@@ -59,6 +69,7 @@ namespace SfLogger
                     secretBox.Text,
                     apiBox.Text,
                     sandboxBox.IsChecked.ToString()});
+             */
         }
 
         private void readCachedCredentials()
@@ -66,7 +77,12 @@ namespace SfLogger
             if (! File.Exists("cache.dat"))
                 return;
 
-            var credentials = File.ReadAllLines("cache.dat");
+            var credentialsBytes = File.ReadAllBytes("cache.dat");
+            var credentials = EncryptionHelper.Decrypt(credentialsBytes).Split('\n');;
+            
+
+
+            //var credentials = File.ReadAllLines("cache.dat");
             try
             {
                 loginBox.Text = credentials[0];
