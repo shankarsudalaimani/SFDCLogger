@@ -158,7 +158,7 @@ namespace SfLogger
             if (res.size == 0)
                 return null;
 
-            return res.records.Cast<ApexLog>();
+            return res.records.Cast<ApexLog>().OrderBy(x => x.StartTime);
         }
 
         private DateTime GetNewestLogDate()
