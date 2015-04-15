@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
 using System.Windows.Threading;
+using System.Windows.Media.Animation;
 
 namespace SfLogger
 {
@@ -30,6 +31,7 @@ namespace SfLogger
         private SFConnection sfConnection;
         private DispatcherTimer timer = new DispatcherTimer();
         private int startCounter;
+        private Storyboard elapsedCircle;
 
         public MainWindow(SFConnection connection)
         {
@@ -42,7 +44,7 @@ namespace SfLogger
             sfConnection.Initialize();
             timer.Interval = new TimeSpan(0, 0, 10);
             timer.Tick += new EventHandler(timer_Tick);
-            
+            elapsedCircle = this.FindResource("Storyboard2") as Storyboard;
         }
 
         public void AddLogs(IEnumerable<string> logs)
@@ -69,12 +71,15 @@ namespace SfLogger
                 Loading();
                 timer.Start();
                 startBtn.Content = "Stop polling";
+                elapsedCircle.Begin();
+                ellipse2.Visibility = System.Windows.Visibility.Visible;
             }
             else
             {
                 timer.Stop();
                 startBtn.Content = "Start polling";
-
+                elapsedCircle.Stop();
+                ellipse2.Visibility = System.Windows.Visibility.Hidden;
             }
             
 

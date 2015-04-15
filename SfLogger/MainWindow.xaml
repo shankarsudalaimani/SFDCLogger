@@ -10,6 +10,15 @@
                 <SplineDoubleKeyFrame KeyTime="00:00:02" Value="360"/>
             </DoubleAnimationUsingKeyFrames>
         </Storyboard>
+
+        <Storyboard x:Key="Storyboard2" RepeatBehavior="Forever">
+            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="whiteBar" Storyboard.TargetProperty="Offset">
+                <SplineDoubleKeyFrame KeyTime="00:00:10" Value="1"/>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="ellipse2" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[2].(RotateTransform.Angle)">
+                <SplineDoubleKeyFrame KeyTime="00:00:10" Value="-360"/>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
     </Window.Resources>
     <Window.Triggers>
         <EventTrigger RoutedEvent="FrameworkElement.Loaded">
@@ -129,6 +138,8 @@
                 </LinearGradientBrush>
             </Ellipse.Stroke>
         </Ellipse>
+        
+        
 
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" >
@@ -137,6 +148,23 @@
                 <Button Grid.Row="0" Name="registerBtn" IsEnabled="false" HorizontalAlignment="Left" Margin="10,0,10,0" VerticalAlignment="Center"
                 Click="registerBtn_Click" Background="#FF292929" Foreground="#FF8F8F8F">Refresh log limit (20)</Button>
             <CheckBox IsChecked="{Binding onTop, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Checked="onTopBox_Checked" Unchecked="onTopBox_Checked"  Name="onTopBox"  VerticalAlignment="Center" Margin="8,0,0,0" Foreground="Gray">Allways on top</CheckBox>
+
+            <Ellipse x:Name="ellipse2" Visibility="Hidden" Margin="50,0,0,0" Width="25" Height="25" StrokeThickness="3" RenderTransformOrigin="0.5,0.5">
+                <Ellipse.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform/>
+                    </TransformGroup>
+                </Ellipse.RenderTransform>
+                <Ellipse.Stroke>
+                    <LinearGradientBrush>
+                        <GradientStop Color="#FF232323" Offset="0"/>
+                        <GradientStop x:Name="whiteBar" Color="#FF232323" Offset="0"/>
+                        <GradientStop Color="Gray" Offset="1"/>
+                    </LinearGradientBrush>
+                </Ellipse.Stroke>
+            </Ellipse>
         </StackPanel>
         
 

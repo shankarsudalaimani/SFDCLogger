@@ -60,16 +60,7 @@ namespace SfLogger
                     secretBox.Text + '\n' +
                     apiBox.Text + '\n' +
                     sandboxBox.IsChecked.ToString()));
-            /*
-            File.WriteAllLines("cache.dat", 
-                new[] { loginBox.Text,
-                    passwordBox.Password,
-                    urlBox.Text,
-                    keyBox.Text,
-                    secretBox.Text,
-                    apiBox.Text,
-                    sandboxBox.IsChecked.ToString()});
-             */
+
         }
 
         private void readCachedCredentials()
